@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="description" content="CNC speed/feed calculator — RPM & feed rate for shop floor (inch / mm)" />
+  <title>CNC Speed / Feed</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --text: #f0f6fc;
+      --muted: #8b949e;
+      --accent: #f0883e;
+      --accent-dim: #9e6a3a;
+      --ok: #3fb950;
+      --warn: #d29922;
+      --warn-bg: #3d2e00;
+      --input-bg: #0d1117;
+      --tap: 52px;
+      --radius: 10px;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 12px 14px calc(24px + env(safe-area-inset-bottom));
+      max-width: 480px;
+      margin-inline: auto;
+    }
+
+    header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0 0 4px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+    }
+
+    header .sub {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .unit-toggle {
+      display: flex;
+      width: 100%;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .unit-toggle button {
+      flex: 1;
+      min-height: var(--tap);
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .unit-toggle button[aria-pressed="true"] {
+      background: var(--accent);
+      color: #0d1117;
+    }
+
+    .unit-toggle button:active:not([aria-pressed="true"]) {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    label .unit {
+      font-weight: 500;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    input[type="number"] {
+      width: 100%;
+      min-height: var(--tap);
+      padding: 10px 14px;
+      font-size: 1.25rem;
+      font-family: var(--mono);
+      font-weight: 600;
+      color: var(--text);
+      background: var(--input-bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(240, 136, 62, 0.25);
+    }
+
+    input.linked-out {
+      color: var(--ok);
+      border-color: #2a4a32;
+      text-align: center;
+    }
+
+    input.linked-out:focus {
+      border-color: var(--accent);
+    }
+
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .presets button {
+      min-height: 40px;
+      min-width: 64px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-family: var(--mono);
+      font-weight: 600;
+      color: var(--text);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .presets button:active,
+    .presets button.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .result-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .result-box .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .result-box .unit-out {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 6px;
+      font-family: var(--mono);
+    }
+
+    .result-box input[type="number"] {
+      min-height: 48px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      padding: 8px 10px;
+    }
+
+    .advisory {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: var(--warn-bg);
+      border: 1px solid var(--warn);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #f0e6c8;
+    }
+
+    .advisory.visible { display: block; }
+
+    .advisory strong { color: var(--warn); }
+
+    .formula {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .formula code {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 0.78rem;
+    }
+
+    .ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 8px;
+    }
+
+    .ref-table th,
+    .ref-table td {
+      padding: 8px 6px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ref-table th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .ref-table td:last-child {
+      font-family: var(--mono);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .disclaimer {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    footer {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin: 8px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CNC Speed / Feed</h1>
+    <p class="sub" id="subtitle">Shop-floor RPM &amp; IPM · offline · inches</p>
+    <div class="unit-toggle" role="group" aria-label="Unit system">
+      <button type="button" id="btnInch" aria-pressed="true">in</button>
+      <button type="button" id="btnMm" aria-pressed="false">mm</button>
+    </div>
+  </header>
+
+  <section class="card" aria-labelledby="inputs-heading">
+    <h2 id="inputs-heading">Inputs</h2>
+
+    <div class="field">
+      <label for="diameter">
+        Diameter
+        <span class="unit" id="diaUnit">inches</span>
+      </label>
+      <input
+        id="diameter"
+        type="number"
+        inputmode="decimal"
+        step="any"
+        min="0"
+        placeholder="e.g. 0.125"
+        autocomplete="off"
+      />
+      <div class="presets" role="group" aria-label="Diameter presets" id="diaPresets">
+        <!-- filled by JS; data-dia-in stores inches -->
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="sfm">
+        <span id="speedLabel">SFM</span>
+        <span class="unit" id="speedUnit">surface ft/min</span>
+      </label>
+      <input
+        id="sfm"
+        type="number"
+        inputmode="decimal"
+        step="any"
+        min="0"
+        placeholder="e.g. 80"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="field">
+      <label for="ipr">
+        Feed / rev
+        <span class="unit" id="feedRevUnit">IPR (in/rev)</span>
+      </label>
+      <input
+        id="ipr"
+        type="number"
+        inputmode="decimal"
+        step="any"
+        min="0"
+        placeholder="e.g. 0.002"
+        autocomplete="off"
+      />
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="outputs-heading">
+    <h2 id="outputs-heading">Results <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">(editable · linked)</span></h2>
+    <div class="results">
+      <div class="result-box">
+        <div class="label">Spindle</div>
+        <input
+          id="rpmOut"
+          class="linked-out"
+          type="number"
+          inputmode="decimal"
+          step="any"
+          min="0"
+          placeholder="—"
+          autocomplete="off"
+          aria-label="Spindle RPM"
+        />
+        <span class="unit-out">RPM</span>
+      </div>
+      <div class="result-box">
+        <div class="label">Feed rate</div>
+        <input
+          id="ipmOut"
+          class="linked-out"
+          type="number"
+          inputmode="decimal"
+          step="any"
+          min="0"
+          placeholder="—"
+          autocomplete="off"
+          aria-label="Feed rate"
+        />
+        <span class="unit-out" id="feedRateUnit">IPM</span>
+      </div>
+    </div>
+    <p class="hint">Change any linked value — related fields update live. Diameter ↔ speed ↔ RPM; feed/rev ↔ feed rate.</p>
+    <div id="advisory" class="advisory" role="status">
+      <strong>High RPM advisory:</strong> Calculated spindle speed exceeds 16,000 RPM
+      (typical Brother Speedio-class limit). Reduce cutting speed or check machine capability — advisory only, not a hard stop.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Formula</h2>
+    <p class="formula" id="formulaCard">
+      <code>RPM = (SFM × 3.82) / Diameter</code><br />
+      <code>IPM = RPM × IPR</code><br /><br />
+      The constant <strong style="color:var(--text)">3.82</strong> comes from
+      <code>SFM × 12 / (π × D) ≈ SFM × 3.82 / D</code>
+      (12 converts feet→inches; π≈3.1416 → 12/π≈3.8197).
+    </p>
+  </section>
+
+  <section class="card">
+    <h2 id="refHeading">Starting SFM (carbide drills)</h2>
+    <p class="disclaimer" style="margin-bottom:8px">
+      Typical catalog <em>starting</em> ranges (Guhring, Kennametal, Sandvik, OSG class).
+      Always verify with your tool maker’s data and coolant setup.
+    </p>
+    <table class="ref-table">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th id="refColHead">Start SFM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Stainless (304/316)</td>
+          <td id="refStainless">~40–80</td>
+        </tr>
+        <tr>
+          <td>Inconel / Ni alloys</td>
+          <td id="refInconel">~20–50</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Disclaimer</h2>
+    <p class="disclaimer">
+      Starting points only — not a substitute for manufacturer speeds/feeds, machine limits,
+      tool geometry, coating, or coolant. Confirm before cutting. Wrong parameters can break tools or damage work/machine.
+    </p>
+  </section>
+
+  <footer>Offline · no network · local only</footer>
+
+  <script>
+/**
+ * CNC Speed/Feed calculator math (shared by page logic & tests)
+ *
+ * Inch:  RPM = (SFM × 3.82) / D_in ; feed = RPM × IPR
+ *        Constant 3.82 ≈ 12/π from SFM×12/(π×D)
+ * Metric: RPM = (Vc × 1000) / (π × D_mm) ≈ (Vc × 318.31) / D_mm
+ *         feed = RPM × mm/rev
+ */
+
+var INCH_TO_MM = 25.4;
+var SFM_TO_M_PER_MIN = 0.3048;
+/** Shop constant for inch RPM (≈ 12/π) */
+var INCH_RPM_FACTOR = 3.82;
+/** Shop constant for metric RPM (≈ 1000/π) */
+var METRIC_RPM_FACTOR = 318.31;
+
+function isValidPositive(n) {
+  return typeof n === 'number' && Number.isFinite(n) && n > 0;
+}
+
+function calcRPM(diameter, sfm) {
+  if (!isValidPositive(diameter) || !isValidPositive(sfm)) return null;
+  return (sfm * INCH_RPM_FACTOR) / diameter;
+}
+
+function calcIPM(rpm, ipr) {
+  if (!isValidPositive(rpm) || !isValidPositive(ipr)) return null;
+  return rpm * ipr;
+}
+
+/** Solve SFM from diameter (in) and RPM: SFM = RPM × D / 3.82 */
+function calcSFM(diameter, rpm) {
+  if (!isValidPositive(diameter) || !isValidPositive(rpm)) return null;
+  return (rpm * diameter) / INCH_RPM_FACTOR;
+}
+
+/** Solve IPR (or mm/rev) from RPM and feed rate: feed/rev = feed_rate / RPM */
+function calcFeedPerRev(rpm, feedRate) {
+  if (!isValidPositive(rpm) || !isValidPositive(feedRate)) return null;
+  return feedRate / rpm;
+}
+
+/** Metric: RPM = (Vc × 318.31) / D_mm */
+function calcRPMMetric(diameterMm, vc) {
+  if (!isValidPositive(diameterMm) || !isValidPositive(vc)) return null;
+  return (vc * METRIC_RPM_FACTOR) / diameterMm;
+}
+
+/** Solve Vc (m/min) from diameter (mm) and RPM */
+function calcVc(diameterMm, rpm) {
+  if (!isValidPositive(diameterMm) || !isValidPositive(rpm)) return null;
+  return (rpm * diameterMm) / METRIC_RPM_FACTOR;
+}
+
+/** Feed rate (mm/min) = RPM × mm/rev — same multiply as calcIPM */
+function calcFeedRateMetric(rpm, mmPerRev) {
+  return calcIPM(rpm, mmPerRev);
+}
+
+function diaInToMm(diaIn) {
+  if (!isValidPositive(diaIn) && diaIn !== 0) return null;
+  if (!Number.isFinite(diaIn)) return null;
+  return diaIn * INCH_TO_MM;
+}
+
+function diaMmToIn(diaMm) {
+  if (!Number.isFinite(diaMm)) return null;
+  return diaMm / INCH_TO_MM;
+}
+
+function sfmToVc(sfm) {
+  if (!Number.isFinite(sfm)) return null;
+  return sfm * SFM_TO_M_PER_MIN;
+}
+
+function vcToSfm(vc) {
+  if (!Number.isFinite(vc)) return null;
+  return vc / SFM_TO_M_PER_MIN;
+}
+
+function iprToMmPerRev(ipr) {
+  if (!Number.isFinite(ipr)) return null;
+  return ipr * INCH_TO_MM;
+}
+
+function mmPerRevToIpr(mmPerRev) {
+  if (!Number.isFinite(mmPerRev)) return null;
+  return mmPerRev / INCH_TO_MM;
+}
+
+function formatResult(value, decimals) {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+  return value.toFixed(decimals);
+}
+
+function needsHighRpmAdvisory(rpm) {
+  return isValidPositive(rpm) && rpm > 16000;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    calcRPM,
+    calcIPM,
+    calcSFM,
+    calcFeedPerRev,
+    calcRPMMetric,
+    calcVc,
+    calcFeedRateMetric,
+    diaInToMm,
+    diaMmToIn,
+    sfmToVc,
+    vcToSfm,
+    iprToMmPerRev,
+    mmPerRevToIpr,
+    formatResult,
+    needsHighRpmAdvisory,
+    isValidPositive,
+    INCH_TO_MM,
+    SFM_TO_M_PER_MIN,
+    INCH_RPM_FACTOR,
+    METRIC_RPM_FACTOR,
+  };
+}
+
+  </script>
+  <script>
+    (function () {
+      var PRESETS_IN = [0.010, 0.015, 0.020, 0.031, 0.062, 0.125];
+
+      var mode = 'inch'; // 'inch' | 'mm'
+      var updating = false;
+
+      var diaEl = document.getElementById('diameter');
+      var sfmEl = document.getElementById('sfm');
+      var iprEl = document.getElementById('ipr');
+      var rpmEl = document.getElementById('rpmOut');
+      var feedEl = document.getElementById('ipmOut');
+      var advisory = document.getElementById('advisory');
+      var presetsEl = document.getElementById('diaPresets');
+      var btnInch = document.getElementById('btnInch');
+      var btnMm = document.getElementById('btnMm');
+
+      function parseInput(el) {
+        var raw = String(el.value).trim();
+        if (raw === '' || raw === '—') return NaN;
+        return parseFloat(raw);
+      }
+
+      function setField(el, value, decimals) {
+        if (value === null || value === undefined || !Number.isFinite(value)) {
+          el.value = '';
+          el.placeholder = '—';
+          return;
+        }
+        if (decimals === 0 || (decimals === undefined && value >= 100)) {
+          el.value = String(Math.round(value));
+        } else if (decimals !== undefined) {
+          el.value = value.toFixed(decimals);
+        } else if (value >= 100) {
+          el.value = String(Math.round(value));
+        } else {
+          el.value = value.toFixed(1);
+        }
+      }
+
+      function setRpmField(rpm) {
+        if (rpm === null || !Number.isFinite(rpm)) {
+          rpmEl.value = '';
+          rpmEl.placeholder = '—';
+          return;
+        }
+        if (rpm >= 100) {
+          rpmEl.value = String(Math.round(rpm));
+        } else {
+          rpmEl.value = rpm.toFixed(1);
+        }
+      }
+
+      function fmtPresetLabel(diaIn) {
+        if (mode === 'inch') {
+          return diaIn.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') || String(diaIn);
+        }
+        var mm = diaIn * 25.4;
+        var s = mm.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+        return s;
+      }
+
+      function renderPresets() {
+        presetsEl.innerHTML = '';
+        PRESETS_IN.forEach(function (diaIn) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.setAttribute('data-dia-in', String(diaIn));
+          if (mode === 'inch') {
+            btn.setAttribute('data-dia', String(diaIn));
+            btn.textContent = fmtPresetLabel(diaIn) + '"';
+          } else {
+            var mm = diaIn * 25.4;
+            btn.setAttribute('data-dia', String(mm));
+            btn.textContent = fmtPresetLabel(diaIn) + ' mm';
+          }
+          btn.addEventListener('click', function () {
+            updating = true;
+            var val = mode === 'inch' ? diaIn : diaIn * 25.4;
+            // sensible display precision
+            diaEl.value = mode === 'inch'
+              ? String(diaIn)
+              : (Math.round(val * 1000) / 1000).toString();
+            Array.prototype.forEach.call(presetsEl.querySelectorAll('button'), function (b) {
+              b.classList.remove('active');
+            });
+            btn.classList.add('active');
+            updating = false;
+            onDiameterChange();
+            diaEl.focus();
+          });
+          presetsEl.appendChild(btn);
+        });
+      }
+
+      function updateLabels() {
+        var diaUnit = document.getElementById('diaUnit');
+        var speedLabel = document.getElementById('speedLabel');
+        var speedUnit = document.getElementById('speedUnit');
+        var feedRevUnit = document.getElementById('feedRevUnit');
+        var feedRateUnit = document.getElementById('feedRateUnit');
+        var subtitle = document.getElementById('subtitle');
+        var formulaCard = document.getElementById('formulaCard');
+        var refHeading = document.getElementById('refHeading');
+        var refColHead = document.getElementById('refColHead');
+        var refStainless = document.getElementById('refStainless');
+        var refInconel = document.getElementById('refInconel');
+
+        if (mode === 'inch') {
+          diaUnit.textContent = 'inches';
+          speedLabel.textContent = 'SFM';
+          speedUnit.textContent = 'surface ft/min';
+          feedRevUnit.textContent = 'IPR (in/rev)';
+          feedRateUnit.textContent = 'IPM';
+          subtitle.textContent = 'Shop-floor RPM & IPM · offline · inches';
+          diaEl.placeholder = 'e.g. 0.125';
+          sfmEl.placeholder = 'e.g. 80';
+          iprEl.placeholder = 'e.g. 0.002';
+          formulaCard.innerHTML =
+            '<code>RPM = (SFM × 3.82) / Diameter</code><br />' +
+            '<code>IPM = RPM × IPR</code><br /><br />' +
+            'The constant <strong style="color:var(--text)">3.82</strong> comes from ' +
+            '<code>SFM × 12 / (π × D) ≈ SFM × 3.82 / D</code> ' +
+            '(12 converts feet→inches; π≈3.1416 → 12/π≈3.8197).';
+          refHeading.textContent = 'Starting SFM (carbide drills)';
+          refColHead.textContent = 'Start SFM';
+          refStainless.textContent = '~40–80';
+          refInconel.textContent = '~20–50';
+        } else {
+          diaUnit.textContent = 'mm';
+          speedLabel.textContent = 'Vc';
+          speedUnit.textContent = 'm/min';
+          feedRevUnit.textContent = 'mm/rev';
+          feedRateUnit.textContent = 'mm/min';
+          subtitle.textContent = 'Shop-floor RPM & mm/min · offline · metric';
+          diaEl.placeholder = 'e.g. 3.175';
+          sfmEl.placeholder = 'e.g. 24';
+          iprEl.placeholder = 'e.g. 0.05';
+          formulaCard.innerHTML =
+            '<code>RPM = (Vc × 318.31) / Diameter_mm</code><br />' +
+            '<code>feed = RPM × mm/rev</code><br /><br />' +
+            'The constant <strong style="color:var(--text)">318.31</strong> comes from ' +
+            '<code>Vc × 1000 / (π × D) ≈ Vc × 318.31 / D</code> ' +
+            '(1000 converts m→mm; π≈3.1416 → 1000/π≈318.31).';
+          refHeading.textContent = 'Starting Vc (carbide drills)';
+          refColHead.textContent = 'Start m/min';
+          // 40–80 SFM × 0.3048 ≈ 12.2–24.4 → ~12–24
+          // 20–50 SFM × 0.3048 ≈ 6.1–15.2 → ~6–15
+          refStainless.textContent = '~12–24';
+          refInconel.textContent = '~6–15';
+        }
+
+        btnInch.setAttribute('aria-pressed', mode === 'inch' ? 'true' : 'false');
+        btnMm.setAttribute('aria-pressed', mode === 'mm' ? 'true' : 'false');
+        renderPresets();
+      }
+
+      function convertFieldValue(el, convertFn, decimals) {
+        var v = parseInput(el);
+        if (!Number.isFinite(v)) {
+          el.value = '';
+          return;
+        }
+        var out = convertFn(v);
+        if (out === null || !Number.isFinite(out)) {
+          el.value = '';
+          return;
+        }
+        // trim trailing zeros for display
+        var fixed = out.toFixed(decimals);
+        el.value = parseFloat(fixed).toString();
+      }
+
+      function switchMode(next) {
+        if (next === mode) return;
+        updating = true;
+        if (next === 'mm') {
+          // inch → mm
+          convertFieldValue(diaEl, function (v) { return v * 25.4; }, 4);
+          convertFieldValue(sfmEl, function (v) { return v * 0.3048; }, 4);
+          convertFieldValue(iprEl, function (v) { return v * 25.4; }, 5);
+          // RPM unchanged; feed rate IPM → mm/min
+          convertFieldValue(feedEl, function (v) { return v * 25.4; }, 3);
+        } else {
+          // mm → inch
+          convertFieldValue(diaEl, function (v) { return v / 25.4; }, 5);
+          convertFieldValue(sfmEl, function (v) { return v / 0.3048; }, 4);
+          convertFieldValue(iprEl, function (v) { return v / 25.4; }, 6);
+          convertFieldValue(feedEl, function (v) { return v / 25.4; }, 4);
+        }
+        mode = next;
+        updating = false;
+        updateLabels();
+        // Recalculate from diameter + speed to keep triangle consistent
+        onDiameterChange();
+      }
+
+      function updateAdvisory(rpm) {
+        if (needsHighRpmAdvisory(rpm)) {
+          advisory.classList.add('visible');
+        } else {
+          advisory.classList.remove('visible');
+        }
+      }
+
+      function computeRpmFromDiaSpeed() {
+        var d = parseInput(diaEl);
+        var s = parseInput(sfmEl);
+        if (mode === 'inch') return calcRPM(d, s);
+        return calcRPMMetric(d, s);
+      }
+
+      function computeSpeedFromDiaRpm() {
+        var d = parseInput(diaEl);
+        var r = parseInput(rpmEl);
+        if (mode === 'inch') return calcSFM(d, r);
+        return calcVc(d, r);
+      }
+
+      function onDiameterChange() {
+        if (updating) return;
+        updating = true;
+        var rpm = computeRpmFromDiaSpeed();
+        setRpmField(rpm);
+        var fpr = parseInput(iprEl);
+        var feed = calcIPM(rpm, fpr);
+        setField(feedEl, feed, 2);
+        updateAdvisory(rpm);
+        updating = false;
+      }
+
+      function onSpeedChange() {
+        if (updating) return;
+        updating = true;
+        var rpm = computeRpmFromDiaSpeed();
+        setRpmField(rpm);
+        var fpr = parseInput(iprEl);
+        var feed = calcIPM(rpm, fpr);
+        setField(feedEl, feed, 2);
+        updateAdvisory(rpm);
+        updating = false;
+      }
+
+      function onRpmChange() {
+        if (updating) return;
+        updating = true;
+        var speed = computeSpeedFromDiaRpm();
+        if (speed === null) {
+          // don't clear speed if RPM invalid mid-edit? show —
+          // keep speed empty placeholder if can't compute
+          if (!Number.isFinite(parseInput(rpmEl)) || parseInput(rpmEl) <= 0) {
+            // leave speed as-is if user cleared RPM? Spec: show — on dependent that can't be computed
+            // Actually for invalid RPM, cutting speed can't be recomputed meaningfully from empty —
+            // only clear if we have diameter but invalid rpm
+            var d = parseInput(diaEl);
+            if (!isValidPositive(d) || !isValidPositive(parseInput(rpmEl))) {
+              // If rpm invalid, set speed display to empty only when both needed are bad
+              // Spec: Invalid/empty/non-positive → show "—" on dependent fields
+              if (!isValidPositive(parseInput(rpmEl))) {
+                sfmEl.value = '';
+                sfmEl.placeholder = '—';
+              }
+            }
+          }
+        } else {
+          // sensible decimals for speed
+          if (mode === 'inch') {
+            setField(sfmEl, speed, speed >= 10 ? 1 : 2);
+          } else {
+            setField(sfmEl, speed, speed >= 10 ? 2 : 3);
+          }
+          // trim
+          if (sfmEl.value) sfmEl.value = parseFloat(sfmEl.value).toString();
+        }
+        var rpm = parseInput(rpmEl);
+        var fpr = parseInput(iprEl);
+        var feed = calcIPM(isValidPositive(rpm) ? rpm : null, fpr);
+        setField(feedEl, feed, 2);
+        updateAdvisory(isValidPositive(rpm) ? rpm : null);
+        updating = false;
+      }
+
+      function onFeedPerRevChange() {
+        if (updating) return;
+        updating = true;
+        var rpm = parseInput(rpmEl);
+        if (!isValidPositive(rpm)) {
+          // try compute rpm first
+          rpm = computeRpmFromDiaSpeed();
+          setRpmField(rpm);
+        }
+        var fpr = parseInput(iprEl);
+        var feed = calcIPM(rpm, fpr);
+        setField(feedEl, feed, 2);
+        updateAdvisory(rpm);
+        updating = false;
+      }
+
+      function onFeedRateChange() {
+        if (updating) return;
+        updating = true;
+        var rpm = parseInput(rpmEl);
+        var feed = parseInput(feedEl);
+        var fpr = calcFeedPerRev(rpm, feed);
+        if (fpr === null) {
+          iprEl.value = '';
+          iprEl.placeholder = '—';
+        } else {
+          var dec = mode === 'inch' ? 5 : 4;
+          setField(iprEl, fpr, dec);
+          if (iprEl.value) iprEl.value = parseFloat(iprEl.value).toString();
+        }
+        updating = false;
+      }
+
+      function bindLive(el, handler) {
+        ['input', 'change'].forEach(function (evt) {
+          el.addEventListener(evt, handler);
+        });
+      }
+
+      bindLive(diaEl, onDiameterChange);
+      bindLive(sfmEl, onSpeedChange);
+      bindLive(iprEl, onFeedPerRevChange);
+      bindLive(rpmEl, onRpmChange);
+      bindLive(feedEl, onFeedRateChange);
+
+      btnInch.addEventListener('click', function () { switchMode('inch'); });
+      btnMm.addEventListener('click', function () { switchMode('mm'); });
+
+      updateLabels();
+      onDiameterChange();
+    })();
+  </script>
+</body>
+</html>

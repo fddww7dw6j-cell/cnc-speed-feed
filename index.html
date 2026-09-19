@@ -239,6 +239,123 @@
       cursor: not-allowed;
     }
 
+    .btn-ref {
+      width: 100%;
+      min-height: 44px;
+      margin-top: 8px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      font-family: var(--font);
+      font-weight: 600;
+      color: var(--text);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-ref:active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .ref-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .ref-toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .brand-ref-panel {
+      display: none;
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .brand-ref-panel.open {
+      display: block;
+    }
+
+    .brand-ref-panel h3 {
+      margin: 0 0 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .brand-ref-panel .ref-msg {
+      margin: 0 0 8px;
+      font-size: 0.82rem;
+      color: var(--warn);
+      font-weight: 600;
+    }
+
+    .brand-ref-panel .ref-note {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .brand-ref-panel ul {
+      list-style: none;
+      margin: 0 0 10px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .brand-ref-panel a {
+      display: block;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      padding: 8px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 40px;
+      line-height: 1.3;
+    }
+
+    .brand-ref-panel a:active {
+      border-color: var(--accent);
+    }
+
+    .brand-ref-panel a .ref-link-note {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .brand-ref-panel .ref-disclaimer {
+      margin: 0;
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.45;
+      font-style: italic;
+    }
+
     .opt-slider-wrap {
       margin-top: 4px;
     }
@@ -485,6 +602,20 @@
       <select id="brand" aria-label="Brand / tool-maker profile">
         <option value="">— select —</option>
       </select>
+      <button type="button" class="btn-ref" id="btnBrandRef">Open live manufacturer reference</button>
+      <label class="ref-toggle" for="toggleBrandRef">
+        <input type="checkbox" id="toggleBrandRef" />
+        Show live references
+      </label>
+      <div class="brand-ref-panel" id="brandRefPanel" hidden aria-live="polite">
+        <h3 id="brandRefTitle">Manufacturer reference</h3>
+        <p class="ref-msg" id="brandRefMsg" hidden></p>
+        <p class="ref-note" id="brandRefNote" hidden></p>
+        <ul id="brandRefList"></ul>
+        <p class="ref-disclaimer">
+          Opens the manufacturer’s own site. Our autofill values are starting points only — always confirm on their live data.
+        </p>
+      </div>
     </div>
 
     <div class="field">
@@ -653,7 +784,7 @@
     </p>
   </section>
 
-  <footer>Offline · no network · local only</footer>
+  <footer>Offline calc · optional OEM reference links</footer>
 
   <script>
 /**
@@ -815,6 +946,141 @@ var CHART_BRANDS = {
   mitsubishi: { id: 'mitsubishi', label: 'Mitsubishi Materials' },
   iscar: { id: 'iscar', label: 'Iscar' },
 };
+
+/**
+ * Official public manufacturer hubs / calculators for live reference (open in
+ * new tab). Static GitHub Pages cannot scrape proprietary feeds (CORS / no
+ * public APIs) — these point users at the OEM’s own site. Prefer https hubs;
+ * optional toolTypes mark a preferred primary link for drills vs end mills.
+ */
+var BRAND_REFERENCES = {
+  generic: {
+    label: 'Generic carbide',
+    urls: [],
+    note: 'Generic has no single OEM. Pick a manufacturer brand above for live reference links.',
+  },
+  harvey: {
+    label: 'Harvey Tool',
+    urls: [
+      { title: 'Speeds & Feeds Charts', href: 'https://www.harveytool.com/resources/speeds-feeds', note: 'Official charts', toolTypes: ['endmill', 'drill', 'general'], primary: true },
+      { title: 'Harvey Tool home', href: 'https://www.harveytool.com/' },
+      { title: 'Resources', href: 'https://www.harveytool.com/resources' },
+    ],
+  },
+  yg1: {
+    label: 'YG-1',
+    urls: [
+      { title: 'YG-1 USA', href: 'https://www.yg1usa.com/', primary: true },
+    ],
+  },
+  guhring: {
+    label: 'Guhring',
+    urls: [
+      { title: 'Speeds & Feeds lookup', href: 'https://guhring.com/SpeedsAndFeeds/SpeedFeed', note: 'By series / EDP', toolTypes: ['drill', 'general'], primary: true },
+      { title: 'Milling Performance Optimizer', href: 'https://guhring.com/Tech/EndMillCalc/', note: 'End mill calculator', toolTypes: ['endmill'] },
+      { title: 'Guhring home', href: 'https://www.guhring.com/' },
+    ],
+  },
+  osg: {
+    label: 'OSG',
+    urls: [
+      { title: 'OSG Tool', href: 'https://www.osgtool.com/', primary: true },
+    ],
+  },
+  titex: {
+    label: 'Titex',
+    urls: [
+      { title: 'Walter Titex tools', href: 'https://www.walter-tools.com/en-us/tools/titex', note: 'Titex is a Walter brand', primary: true },
+      { title: 'Walter Tools', href: 'https://www.walter-tools.com/' },
+      { title: 'Drilling tools hub', href: 'https://www.walter-tools.com/en-us/tools/drilling-tools/pages/default.aspx', toolTypes: ['drill'] },
+    ],
+  },
+  emuge: {
+    label: 'Emuge-Franken',
+    urls: [
+      { title: 'Emuge (US)', href: 'https://www.emuge.com/', primary: true },
+      { title: 'Emuge-Franken Group', href: 'https://www.emuge-franken-group.com/us/en/' },
+      { title: 'Products', href: 'https://www.emuge.com/products' },
+    ],
+  },
+  kyocera: {
+    label: 'Kyocera',
+    urls: [
+      { title: 'Kyocera Precision Tools', href: 'https://www.kyoceraprecisiontools.com/', primary: true },
+      { title: 'Kyocera SGS Tool', href: 'https://www.kyocera-sgstool.com/', note: 'SGS / solid carbide' },
+    ],
+  },
+  kennametal: {
+    label: 'Kennametal',
+    urls: [
+      { title: 'NOVO / Collaboration Space', href: 'https://www.kennametal.com/us/en/resources/novo.html', note: 'Tool advisor portal', primary: true },
+      { title: 'Engineering calculators', href: 'https://www.kennametal.com/us/en/resources/engineering-calculators.html' },
+      { title: 'Kennametal home', href: 'https://www.kennametal.com/us/en/home.html' },
+    ],
+  },
+  sandvik: {
+    label: 'Sandvik Coromant',
+    urls: [
+      { title: 'CoroPlus® Tool Guide', href: 'https://www.sandvik.coromant.com/en-us/tools/digital-machining/coroplus-tool-guide', note: 'Tool & cutting data', primary: true },
+      { title: 'Sandvik Coromant', href: 'https://www.sandvik.coromant.com/' },
+    ],
+  },
+  walter: {
+    label: 'Walter',
+    urls: [
+      { title: 'Walter Tools', href: 'https://www.walter-tools.com/', primary: true },
+      { title: 'Tools hub', href: 'https://www.walter-tools.com/en-us/tools/pages/default.aspx' },
+      { title: 'Titex (drills)', href: 'https://www.walter-tools.com/en-us/tools/titex', toolTypes: ['drill'] },
+    ],
+  },
+  mitsubishi: {
+    label: 'Mitsubishi Materials',
+    urls: [
+      { title: 'Mitsubishi Carbide', href: 'https://www.mitsubishicarbide.com/', primary: true },
+      { title: 'Mitsubishi Materials USA (MMUS)', href: 'https://www.mmus.com/', note: 'US portal' },
+    ],
+  },
+  iscar: {
+    label: 'Iscar',
+    urls: [
+      { title: 'Iscar', href: 'https://www.iscar.com/', primary: true },
+    ],
+  },
+};
+
+/**
+ * @param {string} brandKey
+ * @returns {{ label: string, urls: Array<{title:string,href:string,note?:string,toolTypes?:string[],primary?:boolean}>, note?: string }|null}
+ */
+function getBrandReference(brandKey) {
+  if (!brandKey || !BRAND_REFERENCES[brandKey]) return null;
+  return BRAND_REFERENCES[brandKey];
+}
+
+/**
+ * Prefer a URL tagged for toolType, else primary, else first href.
+ * @param {string} brandKey
+ * @param {string} [toolType]
+ * @returns {{ title: string, href: string, note?: string }|null}
+ */
+function getBrandPrimaryUrl(brandKey, toolType) {
+  var ref = getBrandReference(brandKey);
+  if (!ref || !ref.urls || !ref.urls.length) return null;
+  var urls = ref.urls;
+  var i;
+  if (toolType) {
+    for (i = 0; i < urls.length; i++) {
+      if (urls[i].toolTypes && urls[i].toolTypes.indexOf(toolType) !== -1) {
+        return urls[i];
+      }
+    }
+  }
+  for (i = 0; i < urls.length; i++) {
+    if (urls[i].primary) return urls[i];
+  }
+  return urls[0];
+}
+
 
 /** Brand × baseline multiplier (1.0 = generic). Same factor for SFM and IPR. */
 var BRAND_MULT = {
@@ -1309,6 +1575,7 @@ if (typeof module !== 'undefined' && module.exports) {
     CHART_MATERIALS,
     CHART_BRANDS,
     CHART_TOOL_TYPES,
+    BRAND_REFERENCES,
     CHART_DATA,
     CHART_DATA_DRILL,
     MATERIAL_BASE,
@@ -1318,6 +1585,8 @@ if (typeof module !== 'undefined' && module.exports) {
     bandIndexForDiameter,
     lookupChart,
     getChartRows,
+    getBrandReference,
+    getBrandPrimaryUrl,
     optimizationFactor,
     optimizationLabel,
     scaleChartValues,
@@ -1346,6 +1615,13 @@ if (typeof module !== 'undefined' && module.exports) {
       var toolTypeEl = document.getElementById('toolType');
       var materialEl = document.getElementById('material');
       var brandEl = document.getElementById('brand');
+      var btnBrandRef = document.getElementById('btnBrandRef');
+      var toggleBrandRef = document.getElementById('toggleBrandRef');
+      var brandRefPanel = document.getElementById('brandRefPanel');
+      var brandRefTitle = document.getElementById('brandRefTitle');
+      var brandRefMsg = document.getElementById('brandRefMsg');
+      var brandRefNote = document.getElementById('brandRefNote');
+      var brandRefList = document.getElementById('brandRefList');
       var optSlider = document.getElementById('optSlider');
       var optBias = document.getElementById('optBias');
       var optScale = document.getElementById('optScale');
@@ -1429,6 +1705,91 @@ if (typeof module !== 'undefined' && module.exports) {
       function chartSelectionReady() {
         return !!(toolTypeEl.value && materialEl.value && brandEl.value);
       }
+
+      function openBrandRefPanel() {
+        brandRefPanel.hidden = false;
+        brandRefPanel.classList.add('open');
+      }
+
+      function closeBrandRefPanel() {
+        if (toggleBrandRef.checked) return;
+        brandRefPanel.hidden = true;
+        brandRefPanel.classList.remove('open');
+      }
+
+      function renderBrandReferences(opts) {
+        opts = opts || {};
+        var openPrimary = !!opts.openPrimary;
+        var brand = brandEl.value;
+        var toolType = toolTypeEl.value;
+
+        brandRefMsg.hidden = true;
+        brandRefMsg.textContent = '';
+        brandRefNote.hidden = true;
+        brandRefNote.textContent = '';
+        brandRefList.innerHTML = '';
+
+        if (!brand) {
+          brandRefTitle.textContent = 'Manufacturer reference';
+          brandRefMsg.textContent = 'Pick a brand above to open its official tooling / speeds-feeds hub.';
+          brandRefMsg.hidden = false;
+          openBrandRefPanel();
+          return;
+        }
+
+        var ref = typeof getBrandReference === 'function' ? getBrandReference(brand) : null;
+        if (!ref) {
+          brandRefTitle.textContent = 'Manufacturer reference';
+          brandRefMsg.textContent = 'No live reference map for this brand yet — try Guhring, Sandvik, Kennametal, or Harvey.';
+          brandRefMsg.hidden = false;
+          openBrandRefPanel();
+          return;
+        }
+
+        brandRefTitle.textContent = ref.label + ' — live reference';
+        if (ref.note) {
+          brandRefNote.textContent = ref.note;
+          brandRefNote.hidden = false;
+        }
+
+        var urls = ref.urls || [];
+        if (!urls.length) {
+          brandRefMsg.textContent = ref.note || 'No single OEM hub for this selection — pick a manufacturer brand.';
+          brandRefMsg.hidden = false;
+          openBrandRefPanel();
+          return;
+        }
+
+        urls.forEach(function (u) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = u.href;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = u.title;
+          if (u.note) {
+            var span = document.createElement('span');
+            span.className = 'ref-link-note';
+            span.textContent = u.note;
+            a.appendChild(span);
+          }
+          li.appendChild(a);
+          brandRefList.appendChild(li);
+        });
+
+        openBrandRefPanel();
+
+        if (openPrimary) {
+          var primary = typeof getBrandPrimaryUrl === 'function'
+            ? getBrandPrimaryUrl(brand, toolType)
+            : urls[0];
+          if (primary && primary.href) {
+            window.open(primary.href, '_blank', 'noopener,noreferrer');
+          }
+        }
+      }
+
+
 
       function diameterInches() {
         var d = parseInput(diaEl);
@@ -1807,6 +2168,9 @@ if (typeof module !== 'undefined' && module.exports) {
       function onChartSelectionChange() {
         lastFilledBand = -1; // allow refill
         applyChart(true);
+        if (toggleBrandRef.checked || brandRefPanel.classList.contains('open')) {
+          renderBrandReferences({ openPrimary: false });
+        }
       }
 
       function onOptChange() {
@@ -1840,6 +2204,22 @@ if (typeof module !== 'undefined' && module.exports) {
       optSlider.addEventListener('change', onOptChange);
       btnApply.addEventListener('click', function () {
         applyChart(true);
+      });
+
+      btnBrandRef.addEventListener('click', function () {
+        renderBrandReferences({ openPrimary: true });
+      });
+      toggleBrandRef.addEventListener('change', function () {
+        if (toggleBrandRef.checked) {
+          renderBrandReferences({ openPrimary: false });
+        } else if (!brandEl.value) {
+          closeBrandRefPanel();
+          brandRefPanel.hidden = true;
+          brandRefPanel.classList.remove('open');
+        } else {
+          // leave panel as-is if user already opened via button; only force-close when empty
+          closeBrandRefPanel();
+        }
       });
 
       btnInch.addEventListener('click', function () { switchMode('inch'); });

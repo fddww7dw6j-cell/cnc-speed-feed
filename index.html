@@ -141,11 +141,12 @@
       font-family: var(--mono);
     }
 
-    input[type="number"] {
+    input[type="number"],
+    select {
       width: 100%;
       min-height: var(--tap);
       padding: 10px 14px;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-family: var(--mono);
       font-weight: 600;
       color: var(--text);
@@ -156,15 +157,29 @@
       -moz-appearance: textfield;
     }
 
+    select {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238b949e' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(240, 136, 62, 0.25);
+    }
+
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
-    }
-
-    input[type="number"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(240, 136, 62, 0.25);
     }
 
     input.linked-out {
@@ -184,7 +199,8 @@
       margin-top: 10px;
     }
 
-    .presets button {
+    .presets button,
+    .btn-apply {
       min-height: 40px;
       min-width: 64px;
       padding: 8px 12px;
@@ -200,10 +216,104 @@
     }
 
     .presets button:active,
-    .presets button.active {
+    .presets button.active,
+    .btn-apply:active {
       background: var(--accent-dim);
       border-color: var(--accent);
       color: #fff;
+    }
+
+    .btn-apply {
+      width: 100%;
+      min-height: var(--tap);
+      font-size: 0.95rem;
+      font-family: var(--font);
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #fff;
+      margin-top: 4px;
+    }
+
+    .btn-apply:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .opt-slider-wrap {
+      margin-top: 4px;
+    }
+
+    .opt-ends {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .opt-ends span:last-child { color: var(--accent); }
+    .opt-ends span:first-child { color: var(--ok); }
+
+    input[type="range"] {
+      width: 100%;
+      height: 36px;
+      margin: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #3fb950 0%, #8b949e 50%, #f0883e 100%);
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #3fb950 0%, #8b949e 50%, #f0883e 100%);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--text);
+      border: 3px solid var(--accent);
+      margin-top: -10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--text);
+      border: 3px solid var(--accent);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .opt-bias {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin: 6px 0 0;
+      font-weight: 600;
+      min-height: 1.2em;
+    }
+
+    .opt-scale {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin: 2px 0 0;
     }
 
     .results {
@@ -273,7 +383,7 @@
     .ref-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       margin-top: 8px;
     }
 
@@ -287,15 +397,27 @@
     .ref-table th {
       color: var(--muted);
       font-weight: 600;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
-    .ref-table td:last-child {
+    .ref-table td:nth-child(2),
+    .ref-table td:nth-child(3) {
       font-family: var(--mono);
       color: var(--accent);
       white-space: nowrap;
+    }
+
+    .ref-table tr.active-band td {
+      background: rgba(240, 136, 62, 0.12);
+      color: var(--text);
+    }
+
+    .ref-table tr.active-band td:nth-child(2),
+    .ref-table tr.active-band td:nth-child(3) {
+      color: var(--accent);
+      font-weight: 700;
     }
 
     .disclaimer {
@@ -317,6 +439,18 @@
       color: var(--muted);
       margin: 8px 0 0;
     }
+
+    .chart-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    optgroup {
+      color: var(--muted);
+      font-style: normal;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -333,6 +467,54 @@
     <h2 id="inputs-heading">Inputs</h2>
 
     <div class="field">
+      <label for="toolType">Tool type</label>
+      <select id="toolType" aria-label="Tool type">
+        <option value="">— select —</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="material">Material</label>
+      <select id="material" aria-label="Material">
+        <option value="">— select —</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="brand">Brand</label>
+      <select id="brand" aria-label="Brand / tool-maker profile">
+        <option value="">— select —</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="optSlider">
+        Optimization
+        <span class="unit" id="optUnit">tool life ↔ speed</span>
+      </label>
+      <div class="opt-slider-wrap">
+        <div class="opt-ends">
+          <span>Tool life</span>
+          <span>Speed</span>
+        </div>
+        <input
+          id="optSlider"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value="50"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="50"
+          aria-label="Optimization: tool life to speed"
+        />
+        <p class="opt-bias" id="optBias">balanced</p>
+        <p class="opt-scale" id="optScale">×1.00 chart baseline</p>
+      </div>
+    </div>
+
+    <div class="field">
       <label for="diameter">
         Diameter
         <span class="unit" id="diaUnit">inches</span>
@@ -347,8 +529,11 @@
         autocomplete="off"
       />
       <div class="presets" role="group" aria-label="Diameter presets" id="diaPresets">
-        <!-- filled by JS; data-dia-in stores inches -->
       </div>
+    </div>
+
+    <div class="field">
+      <button type="button" class="btn-apply" id="btnApplyChart">Apply chart</button>
     </div>
 
     <div class="field">
@@ -437,27 +622,23 @@
   </section>
 
   <section class="card">
-    <h2 id="refHeading">Starting SFM (carbide drills)</h2>
+    <h2 id="refHeading">Shop starting chart</h2>
     <p class="disclaimer" style="margin-bottom:8px">
-      Typical catalog <em>starting</em> ranges (Guhring, Kennametal, Sandvik, OSG class).
+      Catalog-inspired <em>starting</em> points only (not guarantees). Values follow
+      tool type × material × brand × diameter band, then the optimization slider.
       Always verify with your tool maker’s data and coolant setup.
     </p>
-    <table class="ref-table">
+    <p class="chart-meta" id="chartMeta">Select tool type, material, and brand to show banded SFM / feed.</p>
+    <table class="ref-table" id="chartTable">
       <thead>
         <tr>
-          <th>Material</th>
-          <th id="refColHead">Start SFM</th>
+          <th>Ø band</th>
+          <th id="refSpeedHead">SFM</th>
+          <th id="refFeedHead">IPR</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>Stainless (304/316)</td>
-          <td id="refStainless">~40–80</td>
-        </tr>
-        <tr>
-          <td>Inconel / Ni alloys</td>
-          <td id="refInconel">~20–50</td>
-        </tr>
+      <tbody id="chartBody">
+        <tr><td colspan="3" style="color:var(--muted)">No selection</td></tr>
       </tbody>
     </table>
   </section>
@@ -480,6 +661,13 @@
  *        Constant 3.82 ≈ 12/π from SFM×12/(π×D)
  * Metric: RPM = (Vc × 1000) / (π × D_mm) ≈ (Vc × 318.31) / D_mm
  *         feed = RPM × mm/rev
+ *
+ * Shop chart (SFM + IPR): approximate *starting* points inspired by typical
+ * carbide catalog ranges (Guhring / Kennametal / Sandvik / OSG class) for
+ * micro drills, end mills, and general cutting tools. NOT copied proprietary
+ * tables — brand bias is intentional and approximate. Conservative values
+ * aimed at Brother Speedio / stainless & Inconel. Always verify with the
+ * tool maker’s data and coolant setup.
  */
 
 var INCH_TO_MM = 25.4;
@@ -488,6 +676,354 @@ var SFM_TO_M_PER_MIN = 0.3048;
 var INCH_RPM_FACTOR = 3.82;
 /** Shop constant for metric RPM (≈ 1000/π) */
 var METRIC_RPM_FACTOR = 318.31;
+
+/** Diameter bands in inches (canonical). Labels for UI. */
+var CHART_BANDS = [
+  { id: 'le015', label: '≤0.015"', labelMm: '≤0.38 mm', maxIn: 0.015 },
+  { id: '015_031', label: '0.015–0.031"', labelMm: '0.38–0.79 mm', maxIn: 0.031 },
+  { id: '031_062', label: '0.031–0.062"', labelMm: '0.79–1.57 mm', maxIn: 0.062 },
+  { id: '062_125', label: '0.062–0.125"', labelMm: '1.57–3.18 mm', maxIn: 0.125 },
+  { id: 'gt125', label: '>0.125"', labelMm: '>3.18 mm', maxIn: Infinity },
+];
+
+/**
+ * Tool types. Chart lookup keys off toolType × brand × material × band.
+ * End mills use higher SFM/chip-load than drills where materials allow;
+ * Inconel/stainless stay conservative. "general" = broader starting points.
+ */
+var CHART_TOOL_TYPES = {
+  drill: {
+    id: 'drill',
+    label: 'Drills (carbide micro)',
+  },
+  endmill: {
+    id: 'endmill',
+    label: 'End mills (carbide)',
+  },
+  general: {
+    id: 'general',
+    label: 'Cutting tools / general',
+  },
+};
+
+/**
+ * Brand bias (within safe catalog-ish ranges):
+ *   generic     — most conservative
+ *   osg, guhring — mid
+ *   kennametal, sandvik — slightly higher
+ *
+ * Materials marked secondary are extras; primary shop focus is stainless & Inconel.
+ */
+var CHART_MATERIALS = {
+  stainless: {
+    id: 'stainless',
+    label: 'Stainless 304/316',
+    secondary: false,
+  },
+  inconel: {
+    id: 'inconel',
+    label: 'Inconel / Ni alloys',
+    secondary: false,
+  },
+  '17-4ph': {
+    id: '17-4ph',
+    label: '17-4 PH',
+    secondary: true,
+  },
+  aluminum: {
+    id: 'aluminum',
+    label: 'Aluminum',
+    secondary: true,
+  },
+  mild_steel: {
+    id: 'mild_steel',
+    label: 'Mild steel',
+    secondary: true,
+  },
+};
+
+var CHART_BRANDS = {
+  generic: { id: 'generic', label: 'Generic carbide' },
+  guhring: { id: 'guhring', label: 'Guhring' },
+  kennametal: { id: 'kennametal', label: 'Kennametal' },
+  sandvik: { id: 'sandvik', label: 'Sandvik Coromant' },
+  osg: { id: 'osg', label: 'OSG' },
+};
+
+/**
+ * Drill baselines (imperial canonical). End mill / general derived with
+ * per-material multipliers below — keeps brands distinct without cloning.
+ * CHART_DATA shape: brand → material → [{ sfm, ipr }, …] aligned to CHART_BANDS.
+ */
+var CHART_DATA_DRILL = {
+  generic: {
+    stainless: [
+      { sfm: 40, ipr: 0.0002 },
+      { sfm: 45, ipr: 0.0004 },
+      { sfm: 50, ipr: 0.0007 },
+      { sfm: 55, ipr: 0.0012 },
+      { sfm: 60, ipr: 0.0020 },
+    ],
+    inconel: [
+      { sfm: 20, ipr: 0.00012 },
+      { sfm: 22, ipr: 0.00022 },
+      { sfm: 25, ipr: 0.0004 },
+      { sfm: 28, ipr: 0.0007 },
+      { sfm: 30, ipr: 0.0011 },
+    ],
+    '17-4ph': [
+      { sfm: 35, ipr: 0.00018 },
+      { sfm: 40, ipr: 0.00035 },
+      { sfm: 45, ipr: 0.0006 },
+      { sfm: 50, ipr: 0.0010 },
+      { sfm: 55, ipr: 0.0017 },
+    ],
+    aluminum: [
+      { sfm: 120, ipr: 0.0004 },
+      { sfm: 140, ipr: 0.0008 },
+      { sfm: 160, ipr: 0.0015 },
+      { sfm: 180, ipr: 0.0025 },
+      { sfm: 200, ipr: 0.0040 },
+    ],
+    mild_steel: [
+      { sfm: 60, ipr: 0.0003 },
+      { sfm: 70, ipr: 0.00055 },
+      { sfm: 80, ipr: 0.0010 },
+      { sfm: 90, ipr: 0.0016 },
+      { sfm: 100, ipr: 0.0025 },
+    ],
+  },
+  guhring: {
+    stainless: [
+      { sfm: 50, ipr: 0.00025 },
+      { sfm: 55, ipr: 0.00045 },
+      { sfm: 60, ipr: 0.00085 },
+      { sfm: 65, ipr: 0.0014 },
+      { sfm: 70, ipr: 0.0024 },
+    ],
+    inconel: [
+      { sfm: 28, ipr: 0.00015 },
+      { sfm: 30, ipr: 0.00028 },
+      { sfm: 35, ipr: 0.0005 },
+      { sfm: 38, ipr: 0.00085 },
+      { sfm: 42, ipr: 0.0013 },
+    ],
+    '17-4ph': [
+      { sfm: 42, ipr: 0.00022 },
+      { sfm: 48, ipr: 0.0004 },
+      { sfm: 52, ipr: 0.00075 },
+      { sfm: 58, ipr: 0.0012 },
+      { sfm: 62, ipr: 0.0020 },
+    ],
+    aluminum: [
+      { sfm: 150, ipr: 0.0005 },
+      { sfm: 170, ipr: 0.0010 },
+      { sfm: 190, ipr: 0.0018 },
+      { sfm: 210, ipr: 0.0030 },
+      { sfm: 230, ipr: 0.0045 },
+    ],
+    mild_steel: [
+      { sfm: 75, ipr: 0.00035 },
+      { sfm: 85, ipr: 0.00065 },
+      { sfm: 95, ipr: 0.0012 },
+      { sfm: 105, ipr: 0.0019 },
+      { sfm: 115, ipr: 0.0030 },
+    ],
+  },
+  osg: {
+    stainless: [
+      { sfm: 48, ipr: 0.00024 },
+      { sfm: 52, ipr: 0.00042 },
+      { sfm: 58, ipr: 0.0008 },
+      { sfm: 62, ipr: 0.00135 },
+      { sfm: 68, ipr: 0.0023 },
+    ],
+    inconel: [
+      { sfm: 26, ipr: 0.00014 },
+      { sfm: 28, ipr: 0.00026 },
+      { sfm: 32, ipr: 0.00048 },
+      { sfm: 36, ipr: 0.0008 },
+      { sfm: 40, ipr: 0.00125 },
+    ],
+    '17-4ph': [
+      { sfm: 40, ipr: 0.0002 },
+      { sfm: 46, ipr: 0.00038 },
+      { sfm: 50, ipr: 0.0007 },
+      { sfm: 56, ipr: 0.00115 },
+      { sfm: 60, ipr: 0.0019 },
+    ],
+    aluminum: [
+      { sfm: 145, ipr: 0.00048 },
+      { sfm: 165, ipr: 0.00095 },
+      { sfm: 185, ipr: 0.0017 },
+      { sfm: 205, ipr: 0.0028 },
+      { sfm: 225, ipr: 0.0043 },
+    ],
+    mild_steel: [
+      { sfm: 72, ipr: 0.00032 },
+      { sfm: 82, ipr: 0.0006 },
+      { sfm: 92, ipr: 0.0011 },
+      { sfm: 100, ipr: 0.0018 },
+      { sfm: 110, ipr: 0.0028 },
+    ],
+  },
+  kennametal: {
+    stainless: [
+      { sfm: 55, ipr: 0.0003 },
+      { sfm: 60, ipr: 0.0005 },
+      { sfm: 68, ipr: 0.0010 },
+      { sfm: 72, ipr: 0.0016 },
+      { sfm: 78, ipr: 0.0028 },
+    ],
+    inconel: [
+      { sfm: 32, ipr: 0.00018 },
+      { sfm: 35, ipr: 0.00032 },
+      { sfm: 40, ipr: 0.00055 },
+      { sfm: 45, ipr: 0.00095 },
+      { sfm: 48, ipr: 0.0015 },
+    ],
+    '17-4ph': [
+      { sfm: 48, ipr: 0.00025 },
+      { sfm: 52, ipr: 0.00045 },
+      { sfm: 58, ipr: 0.00085 },
+      { sfm: 65, ipr: 0.0014 },
+      { sfm: 70, ipr: 0.0023 },
+    ],
+    aluminum: [
+      { sfm: 170, ipr: 0.00055 },
+      { sfm: 190, ipr: 0.0011 },
+      { sfm: 210, ipr: 0.0020 },
+      { sfm: 230, ipr: 0.0034 },
+      { sfm: 250, ipr: 0.0050 },
+    ],
+    mild_steel: [
+      { sfm: 85, ipr: 0.0004 },
+      { sfm: 95, ipr: 0.00075 },
+      { sfm: 110, ipr: 0.0014 },
+      { sfm: 120, ipr: 0.0022 },
+      { sfm: 130, ipr: 0.0035 },
+    ],
+  },
+  sandvik: {
+    stainless: [
+      { sfm: 58, ipr: 0.00032 },
+      { sfm: 62, ipr: 0.00055 },
+      { sfm: 70, ipr: 0.00105 },
+      { sfm: 75, ipr: 0.0017 },
+      { sfm: 80, ipr: 0.0030 },
+    ],
+    inconel: [
+      { sfm: 35, ipr: 0.0002 },
+      { sfm: 38, ipr: 0.00035 },
+      { sfm: 42, ipr: 0.0006 },
+      { sfm: 48, ipr: 0.0010 },
+      { sfm: 50, ipr: 0.0016 },
+    ],
+    '17-4ph': [
+      { sfm: 50, ipr: 0.00028 },
+      { sfm: 55, ipr: 0.00048 },
+      { sfm: 60, ipr: 0.0009 },
+      { sfm: 68, ipr: 0.0015 },
+      { sfm: 72, ipr: 0.0025 },
+    ],
+    aluminum: [
+      { sfm: 180, ipr: 0.0006 },
+      { sfm: 200, ipr: 0.0012 },
+      { sfm: 220, ipr: 0.0022 },
+      { sfm: 240, ipr: 0.0036 },
+      { sfm: 260, ipr: 0.0055 },
+    ],
+    mild_steel: [
+      { sfm: 90, ipr: 0.00042 },
+      { sfm: 100, ipr: 0.0008 },
+      { sfm: 115, ipr: 0.0015 },
+      { sfm: 125, ipr: 0.0024 },
+      { sfm: 135, ipr: 0.0038 },
+    ],
+  },
+};
+
+/**
+ * Per-material multipliers vs drill baseline for other tool types.
+ * End mills: higher SFM on Al/steel; still conservative on Ni/SS.
+ * General: between drill and end mill (broader starting points).
+ */
+var TOOL_TYPE_MULT = {
+  drill: {
+    stainless: { sfm: 1.0, ipr: 1.0 },
+    inconel: { sfm: 1.0, ipr: 1.0 },
+    '17-4ph': { sfm: 1.0, ipr: 1.0 },
+    aluminum: { sfm: 1.0, ipr: 1.0 },
+    mild_steel: { sfm: 1.0, ipr: 1.0 },
+  },
+  endmill: {
+    stainless: { sfm: 1.2, ipr: 1.25 },
+    inconel: { sfm: 1.1, ipr: 1.12 },
+    '17-4ph': { sfm: 1.18, ipr: 1.2 },
+    aluminum: { sfm: 1.4, ipr: 1.45 },
+    mild_steel: { sfm: 1.25, ipr: 1.3 },
+  },
+  general: {
+    stainless: { sfm: 1.08, ipr: 1.1 },
+    inconel: { sfm: 1.05, ipr: 1.06 },
+    '17-4ph': { sfm: 1.08, ipr: 1.1 },
+    aluminum: { sfm: 1.18, ipr: 1.2 },
+    mild_steel: { sfm: 1.12, ipr: 1.15 },
+  },
+};
+
+/** Sane clamps after optimization scaling (imperial). */
+var CHART_CLAMP = {
+  sfmMin: 8,
+  sfmMax: 400,
+  iprMin: 0.00005,
+  iprMax: 0.012,
+};
+
+function roundChartSfm(v) {
+  if (v >= 100) return Math.round(v);
+  if (v >= 20) return Math.round(v * 10) / 10;
+  return Math.round(v * 100) / 100;
+}
+
+function roundChartIpr(v) {
+  if (v >= 0.001) return Math.round(v * 10000) / 10000;
+  return Math.round(v * 100000) / 100000;
+}
+
+function scaleRow(row, mult) {
+  return {
+    sfm: roundChartSfm(row.sfm * mult.sfm),
+    ipr: roundChartIpr(row.ipr * mult.ipr),
+  };
+}
+
+/** Build full CHART_DATA[toolType][brand][material] = bands[] */
+function buildChartData() {
+  var out = {};
+  var toolIds = Object.keys(TOOL_TYPE_MULT);
+  var brandIds = Object.keys(CHART_DATA_DRILL);
+  for (var t = 0; t < toolIds.length; t++) {
+    var toolType = toolIds[t];
+    out[toolType] = {};
+    for (var b = 0; b < brandIds.length; b++) {
+      var brand = brandIds[b];
+      out[toolType][brand] = {};
+      var mats = CHART_DATA_DRILL[brand];
+      var matIds = Object.keys(mats);
+      for (var m = 0; m < matIds.length; m++) {
+        var material = matIds[m];
+        var mult = TOOL_TYPE_MULT[toolType][material] || { sfm: 1, ipr: 1 };
+        out[toolType][brand][material] = mats[material].map(function (row) {
+          return scaleRow(row, mult);
+        });
+      }
+    }
+  }
+  return out;
+}
+
+var CHART_DATA = buildChartData();
 
 function isValidPositive(n) {
   return typeof n === 'number' && Number.isFinite(n) && n > 0;
@@ -572,6 +1108,127 @@ function needsHighRpmAdvisory(rpm) {
   return isValidPositive(rpm) && rpm > 16000;
 }
 
+/**
+ * Resolve diameter (inches) to a CHART_BANDS index.
+ * Bands: ≤0.015 | 0.015–0.031 | 0.031–0.062 | 0.062–0.125 | >0.125
+ */
+function bandIndexForDiameter(diameterIn) {
+  if (!isValidPositive(diameterIn)) return -1;
+  for (var i = 0; i < CHART_BANDS.length; i++) {
+    if (diameterIn <= CHART_BANDS[i].maxIn) return i;
+  }
+  return CHART_BANDS.length - 1;
+}
+
+/**
+ * Optimization slider 0..100 → scale factor.
+ * 0 (tool life) ≈ 0.75×, 50 (balanced) = 1.0×, 100 (speed) ≈ 1.2×
+ * Within requested ranges: life 0.7–0.85, speed 1.1–1.25.
+ */
+function optimizationFactor(opt) {
+  var v = typeof opt === 'number' && Number.isFinite(opt) ? opt : 50;
+  if (v < 0) v = 0;
+  if (v > 100) v = 100;
+  if (v <= 50) {
+    return 0.75 + (v / 50) * 0.25;
+  }
+  return 1.0 + ((v - 50) / 50) * 0.2;
+}
+
+/** Short bias label for the slider. */
+function optimizationLabel(opt) {
+  var v = typeof opt === 'number' && Number.isFinite(opt) ? opt : 50;
+  if (v <= 35) return 'favoring tool life';
+  if (v < 65) return 'balanced';
+  return 'favoring speed';
+}
+
+function clampChartValue(sfm, ipr) {
+  var s = sfm;
+  var f = ipr;
+  if (s < CHART_CLAMP.sfmMin) s = CHART_CLAMP.sfmMin;
+  if (s > CHART_CLAMP.sfmMax) s = CHART_CLAMP.sfmMax;
+  if (f < CHART_CLAMP.iprMin) f = CHART_CLAMP.iprMin;
+  if (f > CHART_CLAMP.iprMax) f = CHART_CLAMP.iprMax;
+  return { sfm: roundChartSfm(s), ipr: roundChartIpr(f) };
+}
+
+/**
+ * Apply optimization scale to baseline SFM/IPR; clamp to sane limits.
+ * @param {{ sfm: number, ipr: number }} baseline
+ * @param {number} opt 0..100
+ */
+function scaleChartValues(baseline, opt) {
+  if (!baseline || !Number.isFinite(baseline.sfm) || !Number.isFinite(baseline.ipr)) {
+    return null;
+  }
+  var factor = optimizationFactor(opt);
+  return clampChartValue(baseline.sfm * factor, baseline.ipr * factor);
+}
+
+/**
+ * Lookup starting SFM + IPR for toolType × brand × material × diameter band.
+ * Returns baseline (optimization=50). Pass optimization to get scaled values.
+ *
+ * @param {{ toolType?: string, brand: string, material: string, diameterIn: number, optimization?: number }} opts
+ * @returns {{ sfm: number, ipr: number, bandLabel: string, bandIndex: number, scale: number, baselineSfm: number, baselineIpr: number } | null}
+ */
+function lookupChart(opts) {
+  if (!opts || typeof opts !== 'object') return null;
+  var toolType = opts.toolType || 'drill';
+  var brand = opts.brand;
+  var material = opts.material;
+  var diameterIn = opts.diameterIn;
+  if (!brand || !material || !isValidPositive(diameterIn)) return null;
+  var toolData = CHART_DATA[toolType];
+  if (!toolData) return null;
+  var brandData = toolData[brand];
+  if (!brandData) return null;
+  var rows = brandData[material];
+  if (!rows || !rows.length) return null;
+  var idx = bandIndexForDiameter(diameterIn);
+  if (idx < 0 || idx >= rows.length) return null;
+  var row = rows[idx];
+  var band = CHART_BANDS[idx];
+  var opt = opts.optimization;
+  if (opt === undefined || opt === null) opt = 50;
+  var scaled = scaleChartValues(row, opt);
+  if (!scaled) return null;
+  return {
+    sfm: scaled.sfm,
+    ipr: scaled.ipr,
+    bandLabel: band.label,
+    bandIndex: idx,
+    scale: optimizationFactor(opt),
+    baselineSfm: row.sfm,
+    baselineIpr: row.ipr,
+  };
+}
+
+/**
+ * All band rows for toolType × brand × material (compact shop chart UI).
+ * Values are baseline (opt=50); UI may show scaled copy separately.
+ * @returns {Array<{ bandLabel: string, labelMm: string, sfm: number, ipr: number, bandIndex: number }> | null}
+ */
+function getChartRows(toolType, brand, material) {
+  var tt = toolType || 'drill';
+  var toolData = CHART_DATA[tt];
+  if (!toolData) return null;
+  var brandData = toolData[brand];
+  if (!brandData) return null;
+  var rows = brandData[material];
+  if (!rows) return null;
+  return rows.map(function (row, i) {
+    return {
+      bandLabel: CHART_BANDS[i].label,
+      labelMm: CHART_BANDS[i].labelMm,
+      sfm: row.sfm,
+      ipr: row.ipr,
+      bandIndex: i,
+    };
+  });
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     calcRPM,
@@ -594,6 +1251,20 @@ if (typeof module !== 'undefined' && module.exports) {
     SFM_TO_M_PER_MIN,
     INCH_RPM_FACTOR,
     METRIC_RPM_FACTOR,
+    CHART_BANDS,
+    CHART_MATERIALS,
+    CHART_BRANDS,
+    CHART_TOOL_TYPES,
+    CHART_DATA,
+    CHART_DATA_DRILL,
+    TOOL_TYPE_MULT,
+    CHART_CLAMP,
+    bandIndexForDiameter,
+    lookupChart,
+    getChartRows,
+    optimizationFactor,
+    optimizationLabel,
+    scaleChartValues,
   };
 }
 
@@ -604,6 +1275,8 @@ if (typeof module !== 'undefined' && module.exports) {
 
       var mode = 'inch'; // 'inch' | 'mm'
       var updating = false;
+      /** Last diameter band index we auto-filled for (detect band changes). */
+      var lastFilledBand = -1;
 
       var diaEl = document.getElementById('diameter');
       var sfmEl = document.getElementById('sfm');
@@ -614,6 +1287,15 @@ if (typeof module !== 'undefined' && module.exports) {
       var presetsEl = document.getElementById('diaPresets');
       var btnInch = document.getElementById('btnInch');
       var btnMm = document.getElementById('btnMm');
+      var toolTypeEl = document.getElementById('toolType');
+      var materialEl = document.getElementById('material');
+      var brandEl = document.getElementById('brand');
+      var optSlider = document.getElementById('optSlider');
+      var optBias = document.getElementById('optBias');
+      var optScale = document.getElementById('optScale');
+      var btnApply = document.getElementById('btnApplyChart');
+      var chartBody = document.getElementById('chartBody');
+      var chartMeta = document.getElementById('chartMeta');
 
       function parseInput(el) {
         var raw = String(el.value).trim();
@@ -651,6 +1333,164 @@ if (typeof module !== 'undefined' && module.exports) {
         }
       }
 
+      function fillSelects() {
+        // Tool types
+        Object.keys(CHART_TOOL_TYPES).forEach(function (id) {
+          var o = document.createElement('option');
+          o.value = id;
+          o.textContent = CHART_TOOL_TYPES[id].label;
+          toolTypeEl.appendChild(o);
+        });
+
+        // Materials: primary then secondary
+        var primary = document.createElement('optgroup');
+        primary.label = 'Shop focus';
+        var secondary = document.createElement('optgroup');
+        secondary.label = 'Secondary';
+        Object.keys(CHART_MATERIALS).forEach(function (id) {
+          var meta = CHART_MATERIALS[id];
+          var o = document.createElement('option');
+          o.value = id;
+          o.textContent = meta.label + (meta.secondary ? '' : '');
+          if (meta.secondary) secondary.appendChild(o);
+          else primary.appendChild(o);
+        });
+        materialEl.appendChild(primary);
+        materialEl.appendChild(secondary);
+
+        Object.keys(CHART_BRANDS).forEach(function (id) {
+          var o = document.createElement('option');
+          o.value = id;
+          o.textContent = CHART_BRANDS[id].label;
+          brandEl.appendChild(o);
+        });
+      }
+
+      function currentOpt() {
+        return parseInt(optSlider.value, 10) || 50;
+      }
+
+      function chartSelectionReady() {
+        return !!(toolTypeEl.value && materialEl.value && brandEl.value);
+      }
+
+      function diameterInches() {
+        var d = parseInput(diaEl);
+        if (!isValidPositive(d)) return null;
+        return mode === 'inch' ? d : d / 25.4;
+      }
+
+      function updateOptLabels() {
+        var opt = currentOpt();
+        optBias.textContent = optimizationLabel(opt);
+        var fac = optimizationFactor(opt);
+        optScale.textContent = '×' + fac.toFixed(2) + ' chart baseline';
+        optSlider.setAttribute('aria-valuenow', String(opt));
+      }
+
+      function renderChartTable() {
+        var refSpeedHead = document.getElementById('refSpeedHead');
+        var refFeedHead = document.getElementById('refFeedHead');
+        if (mode === 'inch') {
+          refSpeedHead.textContent = 'SFM';
+          refFeedHead.textContent = 'IPR';
+        } else {
+          refSpeedHead.textContent = 'm/min';
+          refFeedHead.textContent = 'mm/rev';
+        }
+
+        if (!chartSelectionReady()) {
+          chartMeta.textContent = 'Select tool type, material, and brand to show banded SFM / feed.';
+          chartBody.innerHTML = '<tr><td colspan="3" style="color:var(--muted)">No selection</td></tr>';
+          return;
+        }
+
+        var rows = getChartRows(toolTypeEl.value, brandEl.value, materialEl.value);
+        if (!rows) {
+          chartBody.innerHTML = '<tr><td colspan="3" style="color:var(--muted)">No chart data</td></tr>';
+          return;
+        }
+
+        var opt = currentOpt();
+        var diaIn = diameterInches();
+        var activeIdx = diaIn ? bandIndexForDiameter(diaIn) : -1;
+        var brandLabel = CHART_BRANDS[brandEl.value].label;
+        var matLabel = CHART_MATERIALS[materialEl.value].label;
+        var toolLabel = CHART_TOOL_TYPES[toolTypeEl.value].label;
+        chartMeta.textContent =
+          toolLabel + ' · ' + matLabel + ' · ' + brandLabel +
+          ' · scaled ×' + optimizationFactor(opt).toFixed(2);
+
+        chartBody.innerHTML = '';
+        rows.forEach(function (row) {
+          var scaled = scaleChartValues({ sfm: row.sfm, ipr: row.ipr }, opt);
+          var tr = document.createElement('tr');
+          if (row.bandIndex === activeIdx) tr.className = 'active-band';
+          var speed = mode === 'inch' ? scaled.sfm : scaled.sfm * 0.3048;
+          var feed = mode === 'inch' ? scaled.ipr : scaled.ipr * 25.4;
+          var speedStr = mode === 'inch'
+            ? String(scaled.sfm)
+            : (Math.round(speed * 100) / 100).toString();
+          var feedStr = mode === 'inch'
+            ? scaled.ipr.toFixed(5).replace(/0+$/, '').replace(/\.$/, '')
+            : (Math.round(feed * 10000) / 10000).toString();
+          var bandLabel = mode === 'inch' ? row.bandLabel : row.labelMm;
+          tr.innerHTML =
+            '<td>' + bandLabel + '</td>' +
+            '<td>' + speedStr + '</td>' +
+            '<td>' + feedStr + '</td>';
+          chartBody.appendChild(tr);
+        });
+      }
+
+      /**
+       * Auto-fill SFM + IPR from chart when selection + diameter allow.
+       * @param {boolean} force — Apply chart button / slider / material change
+       */
+      function applyChart(force) {
+        if (!chartSelectionReady()) {
+          renderChartTable();
+          return false;
+        }
+        var diaIn = diameterInches();
+        renderChartTable();
+        if (!diaIn) {
+          // Prefer waiting for diameter for both; chart still updates
+          return false;
+        }
+        var hit = lookupChart({
+          toolType: toolTypeEl.value,
+          brand: brandEl.value,
+          material: materialEl.value,
+          diameterIn: diaIn,
+          optimization: currentOpt(),
+        });
+        if (!hit) return false;
+
+        // Only auto-fill on force, selection change, slider, or diameter band change
+        var bandChanged = hit.bandIndex !== lastFilledBand;
+        if (!force && lastFilledBand >= 0 && !bandChanged) {
+          // diameter tweaked within same band — don't wipe user edits
+          return false;
+        }
+
+        updating = true;
+        var speed = mode === 'inch' ? hit.sfm : hit.sfm * 0.3048;
+        var fpr = mode === 'inch' ? hit.ipr : hit.ipr * 25.4;
+        if (mode === 'inch') {
+          sfmEl.value = String(hit.sfm);
+          var iprStr = hit.ipr.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
+          iprEl.value = iprStr;
+        } else {
+          sfmEl.value = (Math.round(speed * 1000) / 1000).toString();
+          iprEl.value = (Math.round(fpr * 100000) / 100000).toString();
+        }
+        lastFilledBand = hit.bandIndex;
+        updating = false;
+        onDiameterChange();
+        return true;
+      }
+
       function fmtPresetLabel(diaIn) {
         if (mode === 'inch') {
           return diaIn.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') || String(diaIn);
@@ -677,7 +1517,6 @@ if (typeof module !== 'undefined' && module.exports) {
           btn.addEventListener('click', function () {
             updating = true;
             var val = mode === 'inch' ? diaIn : diaIn * 25.4;
-            // sensible display precision
             diaEl.value = mode === 'inch'
               ? String(diaIn)
               : (Math.round(val * 1000) / 1000).toString();
@@ -686,7 +1525,12 @@ if (typeof module !== 'undefined' && module.exports) {
             });
             btn.classList.add('active');
             updating = false;
-            onDiameterChange();
+            // Refill chart for new band if selection present
+            if (chartSelectionReady()) {
+              applyChart(true);
+            } else {
+              onDiameterChange();
+            }
             diaEl.focus();
           });
           presetsEl.appendChild(btn);
@@ -702,9 +1546,6 @@ if (typeof module !== 'undefined' && module.exports) {
         var subtitle = document.getElementById('subtitle');
         var formulaCard = document.getElementById('formulaCard');
         var refHeading = document.getElementById('refHeading');
-        var refColHead = document.getElementById('refColHead');
-        var refStainless = document.getElementById('refStainless');
-        var refInconel = document.getElementById('refInconel');
 
         if (mode === 'inch') {
           diaUnit.textContent = 'inches';
@@ -722,10 +1563,7 @@ if (typeof module !== 'undefined' && module.exports) {
             'The constant <strong style="color:var(--text)">3.82</strong> comes from ' +
             '<code>SFM × 12 / (π × D) ≈ SFM × 3.82 / D</code> ' +
             '(12 converts feet→inches; π≈3.1416 → 12/π≈3.8197).';
-          refHeading.textContent = 'Starting SFM (carbide drills)';
-          refColHead.textContent = 'Start SFM';
-          refStainless.textContent = '~40–80';
-          refInconel.textContent = '~20–50';
+          refHeading.textContent = 'Shop starting chart';
         } else {
           diaUnit.textContent = 'mm';
           speedLabel.textContent = 'Vc';
@@ -742,17 +1580,13 @@ if (typeof module !== 'undefined' && module.exports) {
             'The constant <strong style="color:var(--text)">318.31</strong> comes from ' +
             '<code>Vc × 1000 / (π × D) ≈ Vc × 318.31 / D</code> ' +
             '(1000 converts m→mm; π≈3.1416 → 1000/π≈318.31).';
-          refHeading.textContent = 'Starting Vc (carbide drills)';
-          refColHead.textContent = 'Start m/min';
-          // 40–80 SFM × 0.3048 ≈ 12.2–24.4 → ~12–24
-          // 20–50 SFM × 0.3048 ≈ 6.1–15.2 → ~6–15
-          refStainless.textContent = '~12–24';
-          refInconel.textContent = '~6–15';
+          refHeading.textContent = 'Shop starting chart';
         }
 
         btnInch.setAttribute('aria-pressed', mode === 'inch' ? 'true' : 'false');
         btnMm.setAttribute('aria-pressed', mode === 'mm' ? 'true' : 'false');
         renderPresets();
+        renderChartTable();
       }
 
       function convertFieldValue(el, convertFn, decimals) {
@@ -766,7 +1600,6 @@ if (typeof module !== 'undefined' && module.exports) {
           el.value = '';
           return;
         }
-        // trim trailing zeros for display
         var fixed = out.toFixed(decimals);
         el.value = parseFloat(fixed).toString();
       }
@@ -775,14 +1608,11 @@ if (typeof module !== 'undefined' && module.exports) {
         if (next === mode) return;
         updating = true;
         if (next === 'mm') {
-          // inch → mm
           convertFieldValue(diaEl, function (v) { return v * 25.4; }, 4);
           convertFieldValue(sfmEl, function (v) { return v * 0.3048; }, 4);
           convertFieldValue(iprEl, function (v) { return v * 25.4; }, 5);
-          // RPM unchanged; feed rate IPM → mm/min
           convertFieldValue(feedEl, function (v) { return v * 25.4; }, 3);
         } else {
-          // mm → inch
           convertFieldValue(diaEl, function (v) { return v / 25.4; }, 5);
           convertFieldValue(sfmEl, function (v) { return v / 0.3048; }, 4);
           convertFieldValue(iprEl, function (v) { return v / 25.4; }, 6);
@@ -791,7 +1621,6 @@ if (typeof module !== 'undefined' && module.exports) {
         mode = next;
         updating = false;
         updateLabels();
-        // Recalculate from diameter + speed to keep triangle consistent
         onDiameterChange();
       }
 
@@ -829,6 +1658,22 @@ if (typeof module !== 'undefined' && module.exports) {
         updating = false;
       }
 
+      function onDiameterInput() {
+        if (updating) return;
+        if (chartSelectionReady()) {
+          var diaIn = diameterInches();
+          if (diaIn) {
+            var idx = bandIndexForDiameter(diaIn);
+            if (idx !== lastFilledBand) {
+              applyChart(true);
+              return;
+            }
+          }
+          renderChartTable();
+        }
+        onDiameterChange();
+      }
+
       function onSpeedChange() {
         if (updating) return;
         updating = true;
@@ -846,16 +1691,9 @@ if (typeof module !== 'undefined' && module.exports) {
         updating = true;
         var speed = computeSpeedFromDiaRpm();
         if (speed === null) {
-          // don't clear speed if RPM invalid mid-edit? show —
-          // keep speed empty placeholder if can't compute
           if (!Number.isFinite(parseInput(rpmEl)) || parseInput(rpmEl) <= 0) {
-            // leave speed as-is if user cleared RPM? Spec: show — on dependent that can't be computed
-            // Actually for invalid RPM, cutting speed can't be recomputed meaningfully from empty —
-            // only clear if we have diameter but invalid rpm
             var d = parseInput(diaEl);
             if (!isValidPositive(d) || !isValidPositive(parseInput(rpmEl))) {
-              // If rpm invalid, set speed display to empty only when both needed are bad
-              // Spec: Invalid/empty/non-positive → show "—" on dependent fields
               if (!isValidPositive(parseInput(rpmEl))) {
                 sfmEl.value = '';
                 sfmEl.placeholder = '—';
@@ -863,13 +1701,11 @@ if (typeof module !== 'undefined' && module.exports) {
             }
           }
         } else {
-          // sensible decimals for speed
           if (mode === 'inch') {
             setField(sfmEl, speed, speed >= 10 ? 1 : 2);
           } else {
             setField(sfmEl, speed, speed >= 10 ? 2 : 3);
           }
-          // trim
           if (sfmEl.value) sfmEl.value = parseFloat(sfmEl.value).toString();
         }
         var rpm = parseInput(rpmEl);
@@ -885,7 +1721,6 @@ if (typeof module !== 'undefined' && module.exports) {
         updating = true;
         var rpm = parseInput(rpmEl);
         if (!isValidPositive(rpm)) {
-          // try compute rpm first
           rpm = computeRpmFromDiaSpeed();
           setRpmField(rpm);
         }
@@ -913,17 +1748,43 @@ if (typeof module !== 'undefined' && module.exports) {
         updating = false;
       }
 
+      function onChartSelectionChange() {
+        lastFilledBand = -1; // allow refill
+        applyChart(true);
+      }
+
+      function onOptChange() {
+        updateOptLabels();
+        if (chartSelectionReady()) {
+          applyChart(true);
+        } else {
+          renderChartTable();
+        }
+      }
+
       function bindLive(el, handler) {
         ['input', 'change'].forEach(function (evt) {
           el.addEventListener(evt, handler);
         });
       }
 
-      bindLive(diaEl, onDiameterChange);
+      fillSelects();
+      updateOptLabels();
+
+      bindLive(diaEl, onDiameterInput);
       bindLive(sfmEl, onSpeedChange);
       bindLive(iprEl, onFeedPerRevChange);
       bindLive(rpmEl, onRpmChange);
       bindLive(feedEl, onFeedRateChange);
+
+      toolTypeEl.addEventListener('change', onChartSelectionChange);
+      materialEl.addEventListener('change', onChartSelectionChange);
+      brandEl.addEventListener('change', onChartSelectionChange);
+      optSlider.addEventListener('input', onOptChange);
+      optSlider.addEventListener('change', onOptChange);
+      btnApply.addEventListener('click', function () {
+        applyChart(true);
+      });
 
       btnInch.addEventListener('click', function () { switchMode('inch'); });
       btnMm.addEventListener('click', function () { switchMode('mm'); });
